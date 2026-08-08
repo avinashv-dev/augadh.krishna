@@ -1,15 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
-import S001 from "@/assets/S001.png";
-import S002 from "@/assets/S002.png";
-import S003 from "@/assets/S003.png";
-import S_002 from "@/assets/S_002.png";
-import S_004 from "@/assets/S_004.png";
-import S_008 from "@/assets/S_008.png";
-import B001 from "@/assets/B001.png";
-import B002 from "@/assets/B002.png";
-import B004 from "@/assets/B004.png";
-import B005 from "@/assets/B005.png";
+import S001 from "@/assets/S001.webp";
+import S002 from "@/assets/S002.webp";
+import S003 from "@/assets/S003.webp";
+import S_002 from "@/assets/S_002.webp";
+import S_004 from "@/assets/S_004.webp";
+import S_008 from "@/assets/S_008.webp";
+import B001 from "@/assets/B001.webp";
+import B002 from "@/assets/B002.webp";
+import B004 from "@/assets/B004.webp";
+import B005 from "@/assets/B005.webp";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -73,7 +75,94 @@ function BentoCard({
   );
 }
 
+function Lightbox({
+  images,
+  index,
+  onClose,
+  onNavigate,
+}: {
+  images: { src: string; alt: string }[];
+  index: number;
+  onClose: () => void;
+  onNavigate: (index: number) => void;
+}) {
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") onNavigate((index + 1) % images.length);
+      if (e.key === "ArrowLeft") onNavigate((index - 1 + images.length) % images.length);
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [index, images.length, onClose, onNavigate]);
+
+  const image = images[index];
+  if (!image) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Image viewer"
+      onClick={onClose}
+    >
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Close image viewer"
+        className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+      >
+        <X className="h-6 w-6" />
+      </button>
+
+      {images.length > 1 && (
+        <>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onNavigate((index - 1 + images.length) % images.length);
+            }}
+            aria-label="Previous image"
+            className="absolute left-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 sm:left-4"
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onNavigate((index + 1) % images.length);
+            }}
+            aria-label="Next image"
+            className="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 sm:right-4"
+          >
+            <ChevronRight className="h-6 w-6" />
+          </button>
+        </>
+      )}
+
+      <img
+        src={image.src}
+        alt={image.alt}
+        className="max-h-[90vh] max-w-full rounded-lg object-contain sm:max-w-[90vw]"
+        onClick={(e) => e.stopPropagation()}
+      />
+    </div>
+  );
+}
+
 function Index() {
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
   return (
     <main className="min-h-screen overflow-x-hidden bg-background text-foreground">
       {/* HERO BENTO */}
@@ -232,21 +321,37 @@ function Index() {
         <p className="label-kicker">05 — Portfolio</p>
         <h2 className="mt-3 text-3xl md:text-4xl">Selected frames</h2>
         <div className="mt-6 grid auto-rows-[220px] grid-cols-2 gap-4 md:grid-cols-4">
-          {gallery.map((g) => (
+          {gallery.map((g, i) => (
             <figure
               key={g.src}
               className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-card ${g.span}`}
             >
-              <img
-                src={g.src}
-                alt={g.alt}
-                loading="lazy"
-                className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-              />
+              <button
+                type="button"
+                onClick={() => setLightboxIndex(i)}
+                aria-label={`View full size: ${g.alt}`}
+                className="block h-full w-full cursor-zoom-in focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean"
+              >
+                <img
+                  src={g.src}
+                  alt={g.alt}
+                  loading="lazy"
+                  className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                />
+              </button>
             </figure>
           ))}
         </div>
       </section>
+
+      {lightboxIndex !== null && (
+        <Lightbox
+          images={gallery}
+          index={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+          onNavigate={setLightboxIndex}
+        />
+      )}
 
       {/* CONTACT BENTO */}
       <footer className="border-t border-white/10">
