@@ -1,0 +1,109 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --font-display: "Bebas Neue", sans-serif;
+  --font-body: "Barlow", sans-serif;
+}
+
+:root {
+  --radius: 0.75rem;
+  --background: #0c2340;
+  --foreground: #f0f9ff;
+  --card: #163a5a;
+  --card-foreground: #f0f9ff;
+  --primary: #2d8a9e;
+  --primary-foreground: #ffffff;
+  --secondary: #122f4a;
+  --secondary-foreground: #f0f9ff;
+  --muted: #1a4a6e;
+  --muted-foreground: #93c5d5;
+  --accent: #5cbdb9;
+  --accent-foreground: #0c2340;
+  --border: rgba(255, 255, 255, 0.12);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #5cbdb9;
+  --gradient-ocean: linear-gradient(135deg, #2d8a9e, #5cbdb9);
+  --gradient-deep: linear-gradient(180deg, #163a5a, #0c2340);
+  --shadow-lift: 0 25px 60px -20px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 40px -10px rgba(45, 138, 158, 0.4);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 0.95;
+  }
+}
+
+@utility text-ocean {
+  background: var(--gradient-ocean);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility label-kicker {
+  font-size: 0.7rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  font-weight: 500;
+}
+
+@utility card-lift {
+  box-shadow: var(--shadow-lift);
+}
+
+@utility glow-ocean {
+  box-shadow: var(--shadow-glow);
+}
+
+@utility marquee-track {
+  animation: marquee 26s linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
